@@ -4,6 +4,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from projeto5_website.forms import PerguntaForm
 from datetime import datetime
 
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout
+from django.views.decorators.csrf import csrf_protect
 # Create your views here.
 
 
@@ -20,6 +23,24 @@ def pergunta_form(request):
   else:
     form = PerguntaForm()
   return render(request, "projeto5_website/pergunta_form.html", {'form': form})
+
+
+def login_user(request):
+    logout(request)
+    username = password = ''
+    if request.POST:
+        print(request.POST)
+        username = request.POST['username']
+        password = request.POST['password']
+
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                return HttpResponseRedirect('/admin/')
+    return render(request, 'projeto5_website/login.html')
+
+
 
 def teste(request, teste):
   #TODO: Criar um dicionario de perguntas/alternativas
